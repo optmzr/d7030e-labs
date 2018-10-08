@@ -21,7 +21,7 @@ Afta yo' entered da containa yo', build yo' images wit':
 /usr/ns3 £ ./waf
 ```
 
-### Yo' can modify tha code inside tha `/src` folda directly outside tha docka containa:
+Yo' can modify tha code inside tha `/src` folda directly outside tha docka containa:
 ```
 ~/d7030e-lab2 $ vi src/scenario1.cpp
 ```
