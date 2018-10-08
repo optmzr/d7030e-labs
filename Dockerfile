@@ -31,22 +31,24 @@ RUN apt-get install -y \
 	vtun \
 	lxc \
 	g++-multilib \
-	wget
+	wget \
+	vim
 
 
 RUN pip install cxxfilt
 
-RUN mkdir -p /usr/ns3
 WORKDIR /usr
 
 RUN wget http://www.nsnam.org/release/ns-allinone-3.29.tar.bz2
 RUN tar -xf ns-allinone-3.29.tar.bz2
 
 RUN cd ns-allinone-3.29 && ./build.py --enable-examples --enable-tests
-RUN ln -s /usr/ns-allinone-3.29/ns-3.29/ /usr/ns3/
+RUN ln -s /usr/ns-allinone-3.29/ns-3.29 /usr/ns3
 
 RUN apt-get clean && \
     	rm -rf /var/lib/apt && \
     	rm /usr/ns-allinone-3.29.tar.bz2
 
-RUN cd $HOME && bash
+WORKDIR /usr/ns3
+
+RUN /bin/bash
