@@ -1,10 +1,32 @@
-# D7030E Lab 2
-### Start the stufföö
+# D7030E Laboration 2
+### Understandin' tha symbols
+`$` - Yo' local hood, dawg.
+`£` - Inside tha containa, thug.
+
+### Start da `sh -it`
+So ya'll need to build da docker image with NS-3.
 ```
-docker build -t latest-ns3 .
+~/d7030e-lab2 $ docker build -t latest-ns3 .
 ```
 
-### Enter the stufföö
+### Enta da containa
+Then yo' need ta git tha containa the fsck up n' runnin', n' enta dat homeboy!
 ```
-docker run -it latest-ns3
+~/d7030e-lab2 $ docker run -v src:/usr/ns3/scratch -it latest-ns3
+```
+
+### Usin' tha `sh -it`
+Afta yo' entered da containa yo', build yo' images wit':
+```
+/usr/ns-3 £ ./waf
+```
+
+### Yo' can modify tha code inside tha `/src` folda directly outside tha docka containa:
+```
+~/d7030e-lab2 $ vi src/scenario1.cpp
+```
+
+N' then recompile n' run wit':
+```
+/usr/ns-3 £ ./waf
 ```
