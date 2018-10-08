@@ -1,7 +1,7 @@
-# ☠ Ţ̶͍̮̳͔̐̍h̴̡̲̲̯̓̌ë̵̪́ ̷̬̺̥̹͉̓͋̄̚ḁ̶̡̺̖̌͐͝͝w̵͓͉͉̺̪̽̆̒e̸̢̛̤͈̞̊̂̈́s̶̡̗͓͖͕̈̕͝o̷̹̙͛̂̑̓̐͜m̵͙͎̝̉ë̶̢̪̪̥͔́ ̸̥̘̮͊̈́͛̓͝ͅĎ̴͓͕̂͊̎̔7̴͈̫̐͜0̴̗͑̌̒3̷̭̯͑̽͜0̶̢̞̳̱̺̊͑͂̎̔Ȅ̸̮̌̒̕ͅͅ ̶̻̲̺̣͉̾̽̏̐l̵̡̛͉͙͍͆͘ǎ̷͈̎͌b̴̨̨̛̥͍̎ọ̵̪̙̾̊͋ŗ̷̖͇͙̪̍̒̅͒̕a̴̘̹͐̆͊̐t̴̹̼̼͛̏ì̷͍̗̤̽̿́̿o̸̫̟̓̔̿̊n̶͇͕̰̐̍̈́͠ ̷͈͋͛͠ṇ̵̠͑̎ư̴̦̯̓̽̓m̵̡̠̖͕̿̚b̷̲̠́̆̇ě̶̖̗̒̚ͅr̸̡̬̈ ̶̢̜̝͇̦͑̚d̸̫͕̂̇̚̚͠o̸̗̱͋ṡ̴̰ ⛥
+# ψ D̵̗͎̘̭̀̊̅̎å̴͝ͅ ̶̛̥b̶̥̯̠̹͗̏o̶̯͕̦̘͌̈́͒͆̚m̷̛͚̮̑̍͘b̸̮͕̬̰̭̈́̓͛á̸̛͓̘̪̍͝d̸͙̘̺̞̣͑́̆ ̴̗̼͖̥͊d̶̮̉̇͋͆̕7̴̡̬̈́͂̌̚ͅ0̶̭͓̏̄̅3̷͎̖͕̻̗̀̃̑0̸̟̒̔e̵̝̪͛͂́̇ ̶̠̪̬̩̅̏͒́͊l̷̳̘̞͚̄̚͠͠͠a̵̧̛̜̠̝͂̒͘͝b̶̧̫̺̻̈́͝ͅò̷̡͍̖̖̩̓͗͝r̸̙̔a̴̝̳͒̅̈́̓ͅt̵̬͔̟͉̗̐͒͊e̷̦̞͉̿̿͜ͅö̶̭́͗̿̚ͅn̶͉͝ ̶̘͎͈̊̿̓̚n̶͓̯̼̹̈̌̅̋u̸̠̓͌͝m̵̖̏̀͒͝b̶̧͉͇͖̕͜ȩ̸̡̗̻̹̀̌́ṟ̶̰̼̙̺͐̾͌͆ė̸̳̒͐̈́n̶̛͔̣̩̞͗̃ ̷̲̗̑͑͆͂̚d̷̢̡̰̂̈͘u̸͍̳͊̽͒͝e̷̝̰̯̜̓y̶̝̟̱̑ ⛥
 ### Understandin' tha symbols
-`$` - Yo' local hood, dawg.
-`£` - Inside tha containa, thug.
+ * `$` - Yo' local hood, dawg.
+ * `£` - Inside tha containa, thug.
 
 ### Start da `sh -it`
 So ya'll need to build da docker image with NS-3.
@@ -18,7 +18,7 @@ Then yo' need ta git tha containa the fsck up n' runnin', n' enta dat homeboy!
 ### Usin' tha `sh -it`
 Afta yo' entered da containa yo', build yo' images wit':
 ```
-/usr/ns-3 £ ./waf
+/usr/ns3 £ ./waf
 ```
 
 ### Yo' can modify tha code inside tha `/src` folda directly outside tha docka containa:
@@ -28,5 +28,5 @@ Afta yo' entered da containa yo', build yo' images wit':
 
 N' then recompile n' run wit':
 ```
-/usr/ns-3 £ ./waf
+/usr/ns3 £ ./waf
 ```
