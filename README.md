@@ -1,7 +1,7 @@
 # D7030E Lab 2
 ### Start the stufföö
 ```
-docker build . -tag latest-ns3
+docker build -t latest-ns3 .
 ```
 
 ### Enter the stufföö
