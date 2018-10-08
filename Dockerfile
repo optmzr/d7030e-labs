@@ -51,4 +51,4 @@ RUN apt-get clean && \
 
 WORKDIR /usr/ns3
 
-RUN /usr/bin/bash
+RUN /bin/bash
