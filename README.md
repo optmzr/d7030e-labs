@@ -19,7 +19,7 @@ Then yo' need ta git tha containa the fsck up n' runnin', n' enta dat homeboy!
 ```
 
 ### Usin' tha `sh -it`
-Afta yo' entered da containa yo', build yo' images wit':
+Afta yo' entered da containa yo', build yo' scenario wit':
 ```
 /usr/ns3 £ ./waf --run scenario1
 ```
