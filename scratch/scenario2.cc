@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   NodeContainer ap;
   NodeContainer stas;
   ap.Create(1);
-  stas.Create(2);
+  stas.Create(4);
 
   /* Wi-Fi part */
   Ptr<YansWifiChannel> wifiChannel =
@@ -124,10 +124,13 @@ int main(int argc, char *argv[]) {
       CreateObject<ListPositionAllocator>();
   positionAlloc->Add(Vector(0.0, 0.0, 1.0));
   positionAlloc->Add(Vector(10.0, 0.0, 1.0));
+  positionAlloc->Add(Vector(0.0, 10.0, 1.0));
+  positionAlloc->Add(Vector(10.0, 10.0, 1.0));
 
   mobility.SetPositionAllocator(positionAlloc);
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
   mobility.Install(stas);
+
   Ptr<ListPositionAllocator> positionAllocAP =
       CreateObject<ListPositionAllocator>();
   positionAllocAP->Add(Vector(5.0, 8.6, 1.0));
@@ -154,30 +157,56 @@ int main(int argc, char *argv[]) {
   uint16_t dlPort = 1000;
   ApplicationContainer onOffApp;
 
-  OnOffHelper onOffHelper(
+  bool ipRecvTos = true;
+  bool ipRecvTtl = true;
+
+  // Transmitter 0 (ID = 0)
+  OnOffHelper onOffHelper0(
       "ns3::UdpSocketFactory",
       InetSocketAddress(
           wifiInterfaces.GetAddress(1),
           dlPort)); // OnOffApplication, UDP traffic, Please refer the ns-3 API
-  onOffHelper.SetAttribute(
+  onOffHelper0.SetAttribute(
       "OnTime", StringValue("ns3::ConstantRandomVariable[Constant=5000]"));
-  onOffHelper.SetAttribute(
+  onOffHelper0.SetAttribute(
       "OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-  onOffHelper.SetAttribute(
+  onOffHelper0.SetAttribute(
       "DataRate", DataRateValue(DataRate("20.0Mbps"))); // Traffic Bit Rate
-  onOffHelper.SetAttribute("PacketSize", UintegerValue(1000));
-  onOffApp.Add(onOffHelper.Install(stas.Get(0)));
+  onOffHelper0.SetAttribute("PacketSize", UintegerValue(1000));
+  onOffApp.Add(onOffHelper0.Install(stas.Get(0)));
 
-  // Receiver socket on Sta2
-  TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-  Ptr<Socket> recvSink = Socket::CreateSocket(stas.Get(1), tid);
-  InetSocketAddress local =
+  // Transmitter 1 (ID = 2)
+  OnOffHelper onOffHelper1(
+      "ns3::UdpSocketFactory",
+      InetSocketAddress(
+          wifiInterfaces.GetAddress(3),
+          dlPort)); // OnOffApplication, UDP traffic, Please refer the ns-3 API
+  onOffHelper1.SetAttribute(
+      "OnTime", StringValue("ns3::ConstantRandomVariable[Constant=5000]"));
+  onOffHelper1.SetAttribute(
+      "OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+  onOffHelper1.SetAttribute(
+      "DataRate", DataRateValue(DataRate("20.0Mbps"))); // Traffic Bit Rate
+  onOffHelper1.SetAttribute("PacketSize", UintegerValue(1000));
+  onOffApp.Add(onOffHelper1.Install(stas.Get(2)));
+
+  // Receiver 0 (ID = 1)
+  TypeId tid0 = TypeId::LookupByName("ns3::UdpSocketFactory");
+  Ptr<Socket> recvSink0 = Socket::CreateSocket(stas.Get(1), tid0);
+  InetSocketAddress local0 =
       InetSocketAddress(wifiInterfaces.GetAddress(1), dlPort);
-  bool ipRecvTos = true;
-  recvSink->SetIpRecvTos(ipRecvTos);
-  bool ipRecvTtl = true;
-  recvSink->SetIpRecvTtl(ipRecvTtl);
-  recvSink->Bind(local);
+  recvSink0->SetIpRecvTos(ipRecvTos);
+  recvSink0->SetIpRecvTtl(ipRecvTtl);
+  recvSink0->Bind(local0);
+
+  // Receiver 1 (ID = 3)
+  TypeId tid1 = TypeId::LookupByName("ns3::UdpSocketFactory");
+  Ptr<Socket> recvSink1 = Socket::CreateSocket(stas.Get(3), tid1);
+  InetSocketAddress local1 =
+      InetSocketAddress(wifiInterfaces.GetAddress(3), dlPort);
+  recvSink1->SetIpRecvTos(ipRecvTos);
+  recvSink1->SetIpRecvTtl(ipRecvTtl);
+  recvSink1->Bind(local1);
 
   Simulator::Stop(Seconds(100.0));
   /* PCAP tracing */
