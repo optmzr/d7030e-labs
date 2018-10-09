@@ -25,6 +25,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/wifi-module.h"
 #include <iostream>
 
@@ -59,6 +60,9 @@ int main(int argc, char *argv[]) {
     LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
     LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
   }
+
+  /* Seed the random generator */
+  RngSeedManager::SetSeed(15);
 
   /* Nodes */
   NodeContainer ap;
