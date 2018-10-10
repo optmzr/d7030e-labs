@@ -27,6 +27,8 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/olsr-module.h"
 #include <iostream>
+#include "ns3/constant-rate-wifi-manager.h"
+#include "ns3/nqos-wifi-mac-helper.h"
 
 
            
@@ -43,6 +45,9 @@ main (int argc, char *argv[])
 {
   bool verbose = true;
   uint32_t nWifi = 6;
+  std::string phyMode("DsssRate1Mbps");
+  double nodeDistande = 200;
+
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -72,15 +77,18 @@ main (int argc, char *argv[])
 
   //TODO
   // Create WifiChannel with PropagationLossModel and SpeedPropagationDelayModel
-  Ptr<YansWifiChannel> channel = CreateObject <yansWifiChannel>(); // pointer to wifichannel object
+  Ptr<YansWifiChannel> wifiChannel = CreateObject <YansWifiChannel>(); // pointer to wifichannel object
   Ptr<TwoRayGroundPropagationLossModel> lossModel = CreateObject<TwoRayGroundPropagationLossModel> (); // 
-  channel->SetPropagationLossModel(lossModel);
-  channel->SetPropagationDelayModel(CreateObject <ConstantSpeedPropagationDelayModel>());
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject <ConstantSpeedPropagationDelayModel>();
+  wifiChannel->SetPropagationLossModel(lossModel);
+  wifiChannel->SetPropagationDelayModel(delayModel);
+
 
   //Physical layer of WiFi
+  Config::SetDefault("ns3::ConstantRateWifiManager::DataMode", StringValue(phyMode));
+  
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   
-      
   phy.Set("TxPowerEnd", DoubleValue(16));
   phy.Set("TxPowerStart", DoubleValue(16));
   phy.Set("EnergyDetectionThreshold", DoubleValue(-80));
@@ -88,16 +96,25 @@ main (int argc, char *argv[])
   phy.Set("ChannelNumber", UintegerValue(7));
   //TODO
   //Attach WiFi channel to physical layer
-
+  phy.SetChannel(wifiChannel);
+  phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   //TODO
   //Create WiFi helper and set standart and RemoteStationManager
-  
+  WifiHelper wifi = WifiHelper();
+  wifi.SetStandard(WIFI_PHY_STANDARD_80211b);
+  wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode",
+	  StringValue(phyMode), "ControlMode",
+	  StringValue(phyMode));
   //Mac layer
+  // Note, chosen mac helper has QoS inactivated.
+  // My understandning is that wikipedia says that QoS was introduces in 2005, i.e not included in the 802.11b standard.
+  // hence, the choice of no QoS should be right.
   NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
   mac.SetType ("ns3::AdhocWifiMac");
 
 /////////////////////////////Devices///////////////////////////// 
+  NetDeviceContainer devices = wifi.Install(phy, mac, staNodes);
 
 
   //TODO
@@ -110,7 +127,18 @@ main (int argc, char *argv[])
  /////////////////////////////Deployment///////////////////////////// 
 //TODO
 // Create mobility model with constant positions and deploy all devices in a line with 400m distance between them Z coordinate for all should be 1m!! 
+  // lab specs specifies 200m distance between nodes, contradictory to this comment that says 400. 
+  // loop places nodes with a distance of set distance in beginning constant declarations of main.
   
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+  for (int n = 0; n < nWifi; n++) {
+	  positionAlloc->Add(Vector((n * nodeDistance), 0.0, 1.0));
+  }
+
+  mobility.SetPositionAllocator(positionAlloc);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(staNodes);
 /////////////////////////////Stack of protocols///////////////////////////// 
 
   
@@ -125,17 +153,17 @@ main (int argc, char *argv[])
 
   InternetStackHelper stack;
   stack.SetRoutingHelper (list);
-  stack.Install (wifiStaNodes);
+  stack.Install (staNodes);
 
   Ipv4AddressHelper address;
 
  /////////////////////////////Ip addresation/////////////////////////////  
+ //TODO
+ //Create Ipv4InterfaceContainer 
+ // assign IP addresses to WifiDevices into Ipv4InterfaceContainer
   address.SetBase ("10.1.1.0", "255.255.255.0");
-  //TODO
-  //Create Ipv4InterfaceContainer 
-  // assign IP addresses to WifiDevices into Ipv4InterfaceContainer
-
-
+  Ipv4InterfaceContainer wifiInterfaces;
+  wifiInterfaces = address.Assign(staNodes);
 
 /////////////////////////////Application part///////////////////////////// 
  
