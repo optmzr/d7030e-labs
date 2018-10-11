@@ -42,27 +42,20 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LAB1");
 
 int main(int argc, char *argv[]) {
-  bool verbose = true;
-  uint32_t nWifi = 6;
+  uint32_t seed = 15;
+  std::string rate("DsssRate1Mbps");
+  std::string sta_prefix("result/WIFI_STA");
+  std::string ap_prefix("result/WIFI_AP");
 
   CommandLine cmd;
-  cmd.AddValue("nWifi", "Number of wifi STA devices", nWifi);
-  cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue("seed", "Seed", seed);
+  cmd.AddValue("rate", "Rate", rate);
+  cmd.AddValue("sta", "STA prefix", sta_prefix);
+  cmd.AddValue("ap", "AP prefix", ap_prefix);
   cmd.Parse(argc, argv);
 
-  if (nWifi > 18) {
-    std::cout << "Number of wifi nodes " << nWifi
-              << " specified exceeds the mobility bounding box" << std::endl;
-    exit(1);
-  }
-
-  if (verbose) {
-    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
-  }
-
   /* Seed the random generator */
-  RngSeedManager::SetSeed(15);
+  RngSeedManager::SetSeed(seed);
 
   /* Nodes */
   NodeContainer ap;
@@ -103,8 +96,8 @@ int main(int argc, char *argv[]) {
 
   Ssid ssid = Ssid("wifi-default");
   wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode",
-                               StringValue("DsssRate1Mbps"), "ControlMode",
-                               StringValue("DsssRate1Mbps"));
+                               StringValue(rate), "ControlMode",
+                               StringValue(rate));
 
   WifiMacHelper mac = WifiMacHelper();
 
@@ -167,9 +160,11 @@ int main(int argc, char *argv[]) {
           wifiInterfaces.GetAddress(1),
           dlPort)); // OnOffApplication, UDP traffic, Please refer the ns-3 API
   onOffHelper0.SetAttribute(
-      "OnTime", StringValue("ns3::ConstantRandomVariable[Constant=5000]"));
+      "OnTime",
+      StringValue("ns3::NormalRandomVariable[Mean=10.0|Variance=2.0]"));
   onOffHelper0.SetAttribute(
-      "OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+      "OffTime",
+      StringValue("ns3::NormalRandomVariable[Mean=5.0|Variance=1.0]"));
   onOffHelper0.SetAttribute(
       "DataRate", DataRateValue(DataRate("20.0Mbps"))); // Traffic Bit Rate
   onOffHelper0.SetAttribute("PacketSize", UintegerValue(1000));
@@ -182,9 +177,11 @@ int main(int argc, char *argv[]) {
           wifiInterfaces.GetAddress(3),
           dlPort)); // OnOffApplication, UDP traffic, Please refer the ns-3 API
   onOffHelper1.SetAttribute(
-      "OnTime", StringValue("ns3::ConstantRandomVariable[Constant=5000]"));
+      "OnTime",
+      StringValue("ns3::NormalRandomVariable[Mean=10.0|Variance=2.0]"));
   onOffHelper1.SetAttribute(
-      "OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+      "OffTime",
+      StringValue("ns3::NormalRandomVariable[Mean=5.0|Variance=1.0]"));
   onOffHelper1.SetAttribute(
       "DataRate", DataRateValue(DataRate("20.0Mbps"))); // Traffic Bit Rate
   onOffHelper1.SetAttribute("PacketSize", UintegerValue(1000));
@@ -210,8 +207,8 @@ int main(int argc, char *argv[]) {
 
   Simulator::Stop(Seconds(100.0));
   /* PCAP tracing */
-  phy.EnablePcap("results/WIFI_STA", stas, true);
-  phy.EnablePcap("results/WIFI_AP", ap, true);
+  phy.EnablePcap(sta_prefix, stas, true);
+  phy.EnablePcap(ap_prefix, ap, true);
 
   Simulator::Run();
   Simulator::Destroy();
