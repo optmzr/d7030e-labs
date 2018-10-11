@@ -46,12 +46,17 @@ int main (int argc, char *argv[])
   uint32_t nWifi = 6;
   std::string phyMode("DsssRate1Mbps");
   double nodeDistance = 200;
-
+  uint32_t packetSize = 300;
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
+  cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.Parse (argc,argv);
+
+  std::ostringstream out;
+  out << "results/" << "nSta-" << nWifi << "-pktSize-" << packetSize << "-node";
+  std::string pcapName(out.str());
 
   if (nWifi > 18)
     {
@@ -96,7 +101,7 @@ int main (int argc, char *argv[])
   //TODO
   //Attach WiFi channel to physical layer
   phy.SetChannel(wifiChannel);
-  phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+  //phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   //TODO
   //Create WiFi helper and set standart and RemoteStationManager
@@ -175,7 +180,7 @@ int main (int argc, char *argv[])
     onOffHelper.SetAttribute("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=5000]"));
     onOffHelper.SetAttribute("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
     onOffHelper.SetAttribute("DataRate", DataRateValue(DataRate("10.0Mbps"))); //Traffic Bit Rate
-    onOffHelper.SetAttribute("PacketSize", UintegerValue(300)); // Packet size
+    onOffHelper.SetAttribute("PacketSize", UintegerValue(packetSize)); // Packet size
     onOffApp.Add(onOffHelper.Install(staNodes.Get(0)));  
  
     
@@ -239,7 +244,7 @@ int main (int argc, char *argv[])
 /////////////////////////////PCAP tracing/////////////////////////////   
    //TODO 
    //Enable PCAP tracing for all devices
-  phy.EnablePcap("results/WIFI_STA", staNodes, true);
+  phy.EnablePcap(pcapName, staNodes, true);
 
   Simulator::Run ();
   Simulator::Destroy ();
