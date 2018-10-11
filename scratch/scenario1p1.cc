@@ -39,7 +39,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("LAB1");
+NS_LOG_COMPONENT_DEFINE("LAB2");
 
 int main(int argc, char *argv[]) {
   uint32_t seed = 15;
