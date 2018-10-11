@@ -28,7 +28,7 @@
 #include "ns3/olsr-module.h"
 #include <iostream>
 #include "ns3/constant-rate-wifi-manager.h"
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/ipv4-address-helper.h"
 
 
            
@@ -40,13 +40,12 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LAB3");
 
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   bool verbose = true;
   uint32_t nWifi = 6;
   std::string phyMode("DsssRate1Mbps");
-  double nodeDistande = 200;
+  double nodeDistance = 200;
 
 
   CommandLine cmd;
@@ -110,7 +109,7 @@ main (int argc, char *argv[])
   // Note, chosen mac helper has QoS inactivated.
   // My understandning is that wikipedia says that QoS was introduces in 2005, i.e not included in the 802.11b standard.
   // hence, the choice of no QoS should be right.
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  WifiMacHelper mac = WifiMacHelper();
   mac.SetType ("ns3::AdhocWifiMac");
 
 /////////////////////////////Devices///////////////////////////// 
@@ -132,7 +131,7 @@ main (int argc, char *argv[])
   
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
-  for (int n = 0; n < nWifi; n++) {
+  for (uint32_t n = 0; n < nWifi; n++) {
 	  positionAlloc->Add(Vector((n * nodeDistance), 0.0, 1.0));
   }
 
@@ -163,7 +162,7 @@ main (int argc, char *argv[])
  // assign IP addresses to WifiDevices into Ipv4InterfaceContainer
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer wifiInterfaces;
-  wifiInterfaces = address.Assign(staNodes);
+  wifiInterfaces = address.Assign(devices);
 
 /////////////////////////////Application part///////////////////////////// 
  
@@ -177,12 +176,12 @@ main (int argc, char *argv[])
     onOffHelper.SetAttribute("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
     onOffHelper.SetAttribute("DataRate", DataRateValue(DataRate("10.0Mbps"))); //Traffic Bit Rate
     onOffHelper.SetAttribute("PacketSize", UintegerValue(300)); // Packet size
-    onOffApp.Add(onOffHelper.Install(wifiStaNodes.Get(0)));  
+    onOffApp.Add(onOffHelper.Install(staNodes.Get(0)));  
  
     
   //Opening receiver socket on the last station
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-  Ptr<Socket> recvSink = Socket::CreateSocket (wifiStaNodes.Get (nWifi-1), tid);
+  Ptr<Socket> recvSink = Socket::CreateSocket (staNodes.Get (nWifi-1), tid);
   InetSocketAddress local = InetSocketAddress (wifiInterfaces.GetAddress (nWifi-1), dlPort);
   bool ipRecvTos = true;
   recvSink->SetIpRecvTos (ipRecvTos);
@@ -235,11 +234,12 @@ main (int argc, char *argv[])
 
 
 /////////////////////////////Application part///////////////////////////// 
-
   Simulator::Stop (Seconds (100.0));
+
 /////////////////////////////PCAP tracing/////////////////////////////   
    //TODO 
    //Enable PCAP tracing for all devices
+  phy.EnablePcap("results/WIFI_STA", staNodes, true);
 
   Simulator::Run ();
   Simulator::Destroy ();
