@@ -15,6 +15,7 @@ Then yo' need ta git tha containa the fsck up n' runnin', n' enta dat homeboy!
 ~/d7030e-lab2 $ docker run \
 		-v $(pwd)/scratch:/usr/ns3/scratch \
 		-v $(pwd)/results:/usr/ns3/results \
+		-v $(pwd)/scripts:/usr/ns3/scripts \
 		-it latest-ns3
 ```
 
