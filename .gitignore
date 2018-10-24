@@ -1,2 +1,9 @@
 *.pcap
 *.tc
+*.png
+results/
+!results/.gitkeep
+!results/lab1/.gitkeep
+!results/lab2/.gitkeep
+!results/lab3/.gitkeep
+!results/lab4/.gitkeep
