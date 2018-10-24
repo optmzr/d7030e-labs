@@ -28,7 +28,6 @@
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/propagation-loss-model.h"
-//#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 
@@ -40,13 +39,19 @@ NS_LOG_COMPONENT_DEFINE("LAB4");
 
 int main(int argc, char *argv[]) {
   double simTime = 20;
+  double appDataRate = 50;
   std::string outputPath = "";
   std::string antennaType = "ParabolicAntennaModel";
+  int x, y, z = 0;
 
   CommandLine cmd;
 
   cmd.AddValue("simTime", "Total duration of the simulation [s])", simTime);
   cmd.AddValue("outputPath", "The path of the trace outputs", outputPath);
+  cmd.AddValue("x", "X-axis for UE vector", x);
+  cmd.AddValue("y", "Y-axis for UE vector", y);
+  cmd.AddValue("z", "Z-axis for UE vector", z);
+  cmd.AddValue("appDataRate", "Application data rate [Mbps]", appDataRate);
   cmd.AddValue("antennaType",
                "The antenna type to use, see: "
                "https://www.nsnam.org/docs/models/html/"
@@ -78,6 +83,7 @@ int main(int argc, char *argv[]) {
   cmd.Parse(argc, argv);
 
   NS_LOG_DEBUG("Configuration: \n"
+               << "UE Vector: (" << x << ", " << y << ", " << z << ")\n"
                << "Simulation time: " << simTime << "\n"
                << "Output path: " << outputPath << "\n"
                << "Antenna type: " << antennaType);
@@ -150,8 +156,7 @@ int main(int argc, char *argv[]) {
 
   // Define the location of the first UE.
   MM = ueNodes.Get(0)->GetObject<MobilityModel>();
-  MM->SetPosition(Vector3D(
-      2000, 2000, 1)); // Distance between UE and eNodeB is ~2000 metres.
+  MM->SetPosition(Vector3D(x, y, z)); // Distance between UE and eNodeB.
 
   // Install LTE Devices to the nodes.
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice(enbNodes);
@@ -215,7 +220,9 @@ int main(int argc, char *argv[]) {
       "OnTime", StringValue("ns3::ConstantRandomVariable[Constant=5000]"));
   onOffHelper.SetAttribute(
       "OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-  onOffHelper.SetAttribute("DataRate", DataRateValue(DataRate("50.0Mbps")));
+  onOffHelper.SetAttribute(
+      "DataRate",
+      DataRateValue(DataRate(std::to_string(appDataRate) + "Mbps")));
   onOffHelper.SetAttribute("PacketSize", UintegerValue(1024));
   onOffApp.Add(onOffHelper.Install(remoteHost));
 
@@ -229,15 +236,10 @@ int main(int argc, char *argv[]) {
   // ());
 
   lteHelper->EnableTraces();
-  // phy.EnablePcap ("LAB1", staDevices .Get (nWifi-1), true);
   p2ph.EnablePcapAll(outputPath + "/LTE");
-  // p2ph.EnablePcap(outputPath + "/LTE", internetDevices.Get(1), true);
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
-
-  /*GtkConfigStore config;
-  config.ConfigureAttributes();*/
 
   Simulator::Destroy();
   return 0;

@@ -1,5 +1,6 @@
 *.pcap
 *.tc
+*.png
 results/
 !results/.gitkeep
 !results/lab1/.gitkeep
