@@ -1,0 +1,13 @@
+set -v
+./waf --run "LAB3adhoc --nWifi=6 --packetSize=300"
+./waf --run "LAB3adhoc --nWifi=6 --packetSize=700"
+./waf --run "LAB3adhoc --nWifi=6 --packetSize=1200"
+./waf --run "LAB3adhoc --nWifi=5 --packetSize=300"
+./waf --run "LAB3adhoc --nWifi=5 --packetSize=700"
+./waf --run "LAB3adhoc --nWifi=5 --packetSize=1200"
+./waf --run "LAB3adhoc --nWifi=4 --packetSize=300"
+./waf --run "LAB3adhoc --nWifi=4 --packetSize=700"
+./waf --run "LAB3adhoc --nWifi=4 --packetSize=1200"
+./waf --run "LAB3adhoc --nWifi=3 --packetSize=300"
+./waf --run "LAB3adhoc --nWifi=3 --packetSize=700"
+./waf --run "LAB3adhoc --nWifi=3 --packetSize=1200"
