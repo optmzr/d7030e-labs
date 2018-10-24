@@ -84,6 +84,7 @@ int main(int argc, char *argv[]) {
 
   NS_LOG_DEBUG("Configuration: \n"
                << "UE Vector: (" << x << ", " << y << ", " << z << ")\n"
+               << "App. data rate: " << appDataRate << " Mbps\n"
                << "Simulation time: " << simTime << "\n"
                << "Output path: " << outputPath << "\n"
                << "Antenna type: " << antennaType);
@@ -91,7 +92,6 @@ int main(int argc, char *argv[]) {
   // Configure the LTE+EPC system. Don't touch these before you already
   // understand the whole LTE system and ns-3 source codes.
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
-  // Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
   lteHelper->SetEpcHelper(epcHelper);
   lteHelper->SetSchedulerType("ns3::PfFfMacScheduler");
@@ -127,8 +127,6 @@ int main(int argc, char *argv[]) {
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase("1.0.0.0", "255.0.0.0");
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign(internetDevices);
-  // interface 0 is localhost, 1 is the p2p device
-  // Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting =
@@ -164,11 +162,6 @@ int main(int argc, char *argv[]) {
 
   // Install the IP stack on the UEs.
   internet.Install(ueNodes);
-  // Ipv4InterfaceContainer ueIpIface;
-  // ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer
-  // (ueLteDevs));// Assign IP address to UEs, and install applications
-  // ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer
-  // (ueLteDevs.Get (0)));// Assign IP address to UEs, and install applications
   Ptr<NetDevice> ueLteDevice = ueLteDevs.Get(0);
   Ipv4InterfaceContainer ueIpIface =
       epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueLteDevice));
@@ -180,25 +173,6 @@ int main(int argc, char *argv[]) {
 
   // Attach one UE per eNodeB.
   lteHelper->Attach(ueLteDevs, enbLteDevs.Get(0));
-
-  /*
-  Ptr<EpcTft> tft = Create<EpcTft> ();
-  EpcTft::PacketFilter pf;
-  pf.localPortStart = 1234;
-  pf.localPortEnd = 1234;
-  tft->Add (pf);
-  lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer
-  (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), tft);
-  */
-  /*
-  uint16_t dlPort = 1234;
-  PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory",
-                                     InetSocketAddress (Ipv4Address::GetAny (),
-  dlPort)); ApplicationContainer serverApps = packetSinkHelper.Install
-  (ueNodes.Get(0)); serverApps.Start (Seconds (0.01)); UdpClientHelper client
-  (ueIpIface.GetAddress (0), dlPort); ApplicationContainer clientApps =
-  client.Install (remoteHost); clientApps.Start (Seconds (0.01));
-  */
 
   // Install and start applications on UE and remote host.
   uint16_t dlPort = 1000;
@@ -228,12 +202,8 @@ int main(int argc, char *argv[]) {
 
   // LTE QoS bearer
   EpsBearer bearer(EpsBearer::NGBR_VOICE_VIDEO_GAMING);
-  //  lteHelper->ActivateEpsBearer (ueLteDevs.Get(0), bearer, EpcTft::Default
-  //  ());
   lteHelper->ActivateDedicatedEpsBearer(ueLteDevs.Get(0), bearer,
                                         EpcTft::Default());
-  // epcHelper->ActivateEpsBearer (ueLteDevs.Get(0), bearer, EpcTft::Default
-  // ());
 
   lteHelper->EnableTraces();
   p2ph.EnablePcapAll(outputPath + "/LTE");
